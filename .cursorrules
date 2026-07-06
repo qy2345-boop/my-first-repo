@@ -1,0 +1,12 @@
+# Project: Minimal Editorial Archive Website
+
+- Keep the website simple, clean, and readable.
+- Use a minimal editorial archive aesthetic.
+- Prefer large image blocks, generous white space, small uppercase labels, and a clear grid system.
+- Use restrained colors: off-white, black, grey, and one subtle accent color.
+- Do not over-engineer the project.
+- Keep the existing HTML, CSS, and JavaScript structure unless a change is necessary.
+- Make CSS changes easy to understand and maintain.
+- Use clear class names.
+- Add comments only for non-obvious layout or interaction logic.
+- Avoid unnecessary animations, gradients, or decorative effects.
