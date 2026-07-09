@@ -1,151 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <title>My First Website — Poppy Qiaochu Yang</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spatial Canvases</title>
+  <link rel="stylesheet" href="style.css" />
 
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+  <!-- three.js import map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 
 <body>
+  <header class="page-header">
+    <h1>Spatial Canvases</h1>
+    <p>
+      A collection of 2D and 3D spatial studies exploring interaction, motion,
+      material, image effects, and graphic systems through p5.js and Three.js.
+    </p>
+  </header>
 
-  <!-- Opening screen -->
-  <section class="opening-screen">
-    <header class="poster-nav">
-      <a href="#">GSAPP</a>
-      <a href="#">Project Archive</a>
-    </header>
+  <main>
+    <section class="canvas-grid">
+      <article class="canvas-card">
+        <h2>3D Spatial Canvas 01</h2>
+        <p>Rubik’s Cube study with animated layer rotation, orbit camera, and graphic materials.</p>
+        <div id="three-canvas-1" class="three-canvas"></div>
+      </article>
 
-    <div class="red-script red-script--one">Computational</div>
-    <div class="red-script red-script--two">Design</div>
-    <div class="red-script red-script--three">Practices</div>
+      <article class="canvas-card">
+        <h2>3D Spatial Canvas 02</h2>
+        <p>Clover flip field with glossy materials, color changes, and wave animation.</p>
+        <div id="three-canvas-2" class="three-canvas"></div>
+      </article>
+    </section>
 
-    <div class="poster-content">
-      <h1>
-        A first web project by<br>
-        <span>Poppy Qiaochu Yang</span><br>
-        exploring <em>HTML</em>, <em>CSS</em>, and <em>JavaScript</em><br>
-        through editorial web layout.
-      </h1>
-    </div>
-  </section>
+    <section class="canvas-grid">
+      <article class="canvas-card">
+        <h2>2D Spatial Canvas 01</h2>
+        <p>Frosted cat field with pixel-glass masking and animated image movement.</p>
+        <div id="p5-cat-canvas" class="p5-canvas"></div>
+      </article>
 
-  <!-- Archive record section -->
-<main class="page-content">
+      <article class="canvas-card">
+        <h2>2D Spatial Canvas 02</h2>
+        <p>Interactive fan-cat scene: hold the mouse to power the fan and launch the cat.</p>
+        <div id="p5-fan-cat-canvas" class="p5-canvas"></div>
+      </article>
+    </section>
 
-  <section class="archive-sheet">
     
-    <div class="sheet-summary">
-      <p class="small-label">Summary</p>
-      <p>
-        This archive sheet records the original content of the first website template.
-        The entries below preserve the existing Abstract, Motivation, Methodology, and
-        Interactive Demo sections while presenting them in an archival grid format.
-      </p>
-    </div>
+  </main>
 
-    <p class="small-label item-title">Item Entries</p>
+  <!-- Three.js scenes -->
+  <script type="module" src="./three-scene-1.js"></script>
+  <script type="module" src="./three-scene-2.js"></script>
 
-    <div class="record-card">
-      <div class="record-header">
-        <p>Number: 2026-ABSTRACT-01</p>
-        <p>Date: 2026/07/05</p>
-        <p>Type: Abstract</p>
-      </div>
-
-      <div class="record-body">
-        <div class="record-image record-image--one">
-          <span>01</span>
-        </div>
-
-        <div class="record-description">
-          <p class="small-label">Abstract</p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="record-card">
-      <div class="record-header">
-        <p>Number: 2026-MOTIVATION-02</p>
-        <p>Date: 2026/07/05</p>
-        <p>Type: Motivation</p>
-      </div>
-
-      <div class="record-body">
-        <div class="record-image record-image--two">
-          <span>02</span>
-        </div>
-
-        <div class="record-description">
-          <p class="small-label">Motivation</p>
-          <p>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-            laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-            architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas
-            sit aspernatur aut odit aut fugit.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="record-card">
-      <div class="record-header">
-        <p>Number: 2026-METHODOLOGY-03</p>
-        <p>Date: 2026/07/05</p>
-        <p>Type: Methodology</p>
-      </div>
-
-      <div class="record-body">
-        <div class="record-image record-image--three">
-          <span>03</span>
-        </div>
-
-        <div class="record-description">
-          <p class="small-label">Methodology</p>
-          <p>
-            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-            voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint
-            occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt
-            mollitia animi, id est laborum et dolorum fuga.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="record-card">
-      <div class="record-header">
-        <p>Number: 2026-DEMO-04</p>
-        <p>Date: 2026/07/05</p>
-        <p>Type: Interactive Demo</p>
-      </div>
-
-      <div class="record-body">
-        <div class="record-image record-image--two">
-          <span>JS</span>
-        </div>
-
-        <div class="record-description">
-          <p class="small-label">Interactive Demo</p>
-          <p>Click the button below to see JavaScript in action:</p>
-          <button id="demoButton">Click Me!</button>
-          <div id="messageDisplay"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-  <script src="script.js"></script>
+  <!-- p5.js scenes -->
+  <script src="./p5-cat.js"></script>
+  <script src="./p5-fan-cat.js"></script>
 </body>
-
 </html>
-
