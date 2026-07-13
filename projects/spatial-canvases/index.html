@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Spatial Canvases</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Three.js import map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <header class="page-header">
+    <a class="back-link" href="../../index.html">
+      ← Back to Project Archive
+    </a>
+
+    <h1>Spatial Canvases</h1>
+
+    <p>
+      A collection of browser-based spatial studies exploring geometry,
+      rotation, material, motion, and three-dimensional interaction through Three.js.
+    </p>
+  </header>
+
+  <main>
+    <section class="canvas-grid">
+      <article class="canvas-card">
+        <h2>Rotating Assembly</h2>
+
+        <p>
+          A Rubik’s Cube study using animated layer rotation,
+          orbit-camera interaction, and graphic materials.
+        </p>
+
+        <div id="three-canvas-1" class="three-canvas"></div>
+      </article>
+
+      <article class="canvas-card">
+        <h2>Clover Field</h2>
+
+        <p>
+          A field of flipping clover forms using glossy materials,
+          color variation, and wave-based animation.
+        </p>
+
+        <div id="three-canvas-2" class="three-canvas"></div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Three.js scenes -->
+  <script type="module" src="three-scene-1.js"></script>
+  <script type="module" src="three-scene-2.js"></script>
+</body>
+</html>

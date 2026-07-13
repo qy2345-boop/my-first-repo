@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Generative Graphics</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+
+<body>
+  <header class="page-header">
+    <a class="back-link" href="../../index.html">
+      ← Back to Project Archive
+    </a>
+
+    <h1>Generative Graphics</h1>
+
+    <p>
+      A collection of two-dimensional visual studies exploring movement,
+      image effects, interaction, repetition, and graphic systems through p5.js.
+    </p>
+  </header>
+
+  <main>
+    <section class="canvas-grid">
+      <article class="canvas-card">
+        <h2>Frosted Cat Field</h2>
+
+        <p>
+          A moving image field that uses pixel-based glass distortion,
+          repetition, and animated masking to transform a cat image.
+        </p>
+
+        <div id="p5-cat-canvas" class="p5-canvas"></div>
+      </article>
+
+      <article class="canvas-card">
+        <h2>Fan Cat</h2>
+
+        <p>
+          An interactive scene in which holding the mouse powers a fan
+          and changes the movement of the cat.
+        </p>
+
+        <div id="p5-fan-cat-canvas" class="p5-canvas"></div>
+      </article>
+    </section>
+  </main>
+
+  <!-- p5.js scenes -->
+  <script src="p5-cat.js"></script>
+  <script src="p5-fan-cat.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+month,recorded_nights,total_awakenings,average_awakenings,most_common_wake_start,most_common_wake_end,most_common_previous_stage,longest_awakening_minutes
+2025-10,26,95,3.7,31,32,core,119.5
+2025-11,24,80,3.3,32,33,core,109.0
+2025-12,24,83,3.5,31,32,core,78.5

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>When Do I Wake Up?</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <main class="page-shell">
+
+  <a class="back-link" href="../../index.html">
+    ← Back to Project Archive
+  </a>
+
+  <header class="masthead">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">APPLE HEALTH · Q4 2025</p>
+        <h1>When Do I Wake Up?</h1>
+      </div>
+
+      <div class="masthead-meta">
+        <label class="meta-block">
+          <span class="meta-label">VIEW</span>
+          <select id="month-select" aria-label="Select month"></select>
+        </label>
+
+        <div class="data-line">
+          <span class="meta-label">DATA</span>
+          <strong>74 recorded nights</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="intro-grid">
+      <div>
+        <p class="section-number">01</p>
+        <h2>Night structure</h2>
+      </div>
+
+      <p class="section-copy">
+        Each row shows one recorded night. Black triangles mark distinct awakenings;
+        the number at the right counts how many occurred that night.
+      </p>
+
+      <div class="legend">
+        <span><i class="legend-triangle">▲</i>Awake</span>
+        <span><i class="legend-line rem"></i>REM</span>
+        <span><i class="legend-line core"></i>Core</span>
+        <span><i class="legend-line deep"></i>Deep</span>
+      </div>
+    </section>
+
+    <section class="chart-panel timeline-panel">
+      <div id="timeline"></div>
+    </section>
+
+    <section class="monthly-summary">
+      <div class="summary-heading">
+        <p class="section-number">MONTHLY INTERRUPTION SUMMARY</p>
+        <h2 id="summary-month">November 2025</h2>
+      </div>
+
+      <div class="summary-metrics">
+        <div class="summary-item">
+          <span>Most common wake window</span>
+          <strong id="common-window">—</strong>
+        </div>
+        <div class="summary-item">
+          <span>Average awakenings per night</span>
+          <strong id="average-awakenings">—</strong>
+        </div>
+        <div class="summary-item">
+          <span>Most common previous stage</span>
+          <strong id="previous-stage">—</strong>
+        </div>
+        <div class="summary-item">
+          <span>Longest awakening</span>
+          <strong id="longest-awakening">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="calendar-section">
+      <div>
+        <p class="section-number">02</p>
+        <h2>Month overview</h2>
+      </div>
+
+      <div class="calendar-layout">
+        <div id="all-calendars" class="all-calendars"></div>
+
+        <aside id="details" class="details-panel">
+          <p class="details-kicker">SELECTED NIGHT</p>
+          <p class="details-empty">Hover over a recorded day to inspect it.</p>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <span>Source: Apple Health export.xml</span>
+      <span>Awakening = awake segment ≥1 minute; gaps ≤3 minutes merged</span>
+    </footer>
+  </main>
+
+  <div id="tooltip" class="tooltip" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="script.js"></script>
+</body>
+</html>

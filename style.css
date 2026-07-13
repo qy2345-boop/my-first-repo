@@ -1,100 +1,380 @@
+/* Base page styles */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
-  padding: 32px;
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
+  background: #f2eee5;
   color: #111;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.page-header {
-  max-width: 1500px;
-  margin: 0 auto 40px auto;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.page-header h1 {
-  margin: 0 0 12px 0;
-  font-size: 40px;
-}
-
-.page-header p {
-  max-width: 850px;
+.small-label {
   margin: 0;
-  font-size: 17px;
-  line-height: 1.5;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.canvas-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  max-width: 1500px;
-  margin: 0 auto 56px auto;
-}
-
-.canvas-card {
-  min-width: 0;
-}
-
-.canvas-card h2 {
-  margin: 0 0 12px 0;
-  font-size: 26px;
-}
-
-.canvas-card p {
-  margin: 0 0 18px 0;
-  font-size: 15px;
-  line-height: 1.4;
-}
-
-.three-canvas {
-  width: 100%;
-  height: 430px;
-  border: 1px solid #111;
-  background: #f7f7f7;
+/* Opening screen */
+.opening-screen {
   position: relative;
+  min-height: 88vh;
   overflow: hidden;
+  background: #f2eee5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 42px;
 }
 
-.p5-canvas {
-  width: 100%;
-  height: 460px;
-  border: 1px solid #111;
-  background: #f7f7f7;
+.poster-nav {
+  position: absolute;
+  top: 32px;
+  left: 36px;
+  right: 36px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.red-script {
+  position: absolute;
+  z-index: 2;
+  color: #c8231c;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 0.76;
+  letter-spacing: -0.09em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.96;
+}
+
+.red-script--one {
+  top: 12%;
+  left: 0%;
+  font-size: clamp(6rem, 19vw, 22rem);
+  transform: rotate(-8deg);
+}
+
+.red-script--two {
+  top: 24%;
+  right: 0%;
+  font-size: clamp(6rem, 19vw, 22rem);
+  transform: rotate(-8deg);
+}
+
+.red-script--three {
+  bottom: 12%;
+  left: 8%;
+  font-size: clamp(6rem, 19vw, 22rem);
+  transform: rotate(-7deg);
+}
+
+.poster-content {
   position: relative;
-  overflow: hidden;
+  z-index: 10;
+  max-width: 860px;
+  text-align: center;
+  padding: 48px 24px;
 }
 
-.p5-canvas canvas,
-.three-canvas canvas {
+.poster-content h1 {
+  margin: 0 auto;
+  max-width: 860px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.2rem, 4.4vw, 4.7rem);
+  font-weight: 500;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+.poster-content h1 span,
+.poster-content h1 em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Archive sheet */
+.page-content {
+  background: #f2eee5;
+  padding: 56px 42px 96px;
+}
+
+.archive-sheet {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px;
+  border: 2px solid #111;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.sheet-summary {
+  padding-bottom: 34px;
+  border-bottom: 1px solid #111;
+}
+
+.sheet-summary p:last-child {
+  max-width: 920px;
+  margin: 14px 0 0;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.item-title {
+  margin: 34px 0 16px;
+}
+
+.record-card {
   display: block;
+  border: 1px solid #111;
+  margin-bottom: 24px;
+  transition: background 180ms ease, transform 180ms ease;
 }
 
-.description {
-  max-width: 1000px;
-  margin: 0 auto 80px auto;
+.record-card:hover {
+  background: rgba(200, 35, 28, 0.035);
+  transform: translateY(-2px);
 }
 
-.description h2 {
-  margin: 0 0 12px 0;
-  font-size: 26px;
+.record-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid #111;
 }
 
-.description p {
-  font-size: 17px;
-  line-height: 1.6;
+.record-header p {
+  margin: 0;
+  padding: 10px 14px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 
+.record-header p + p {
+  border-left: 1px solid #111;
+}
+
+.record-body {
+  display: grid;
+  grid-template-columns: 0.9fr 1.4fr;
+  min-height: 280px;
+}
+
+.record-image {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px dashed #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.record-image > span {
+  position: relative;
+  z-index: 3;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.58);
+}
+
+.preview-spatial {
+  background:
+    radial-gradient(circle, rgba(0,0,0,.14) 1px, transparent 1px),
+    rgba(0,0,0,.035);
+  background-size: 8px 8px;
+}
+
+.orbit {
+  position: absolute;
+  border: 1px solid rgba(0,0,0,.42);
+  border-radius: 50%;
+}
+
+.orbit-one {
+  width: 190px;
+  height: 90px;
+  transform: rotate(28deg);
+}
+
+.orbit-two {
+  width: 90px;
+  height: 190px;
+  transform: rotate(-28deg);
+}
+
+.preview-generative {
+  background:
+    linear-gradient(rgba(0,0,0,.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.075) 1px, transparent 1px),
+    rgba(0,0,0,.035);
+  background-size: 24px 24px;
+}
+
+.wave {
+  position: absolute;
+  width: 74%;
+  height: 48px;
+  border-top: 3px solid rgba(200,35,28,.48);
+  border-radius: 50%;
+}
+
+.wave-one { transform: translateY(-28px) rotate(7deg); }
+.wave-two { transform: translateY(30px) rotate(-7deg); }
+
+.preview-temporal {
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.07) 1px, transparent 1px),
+    rgba(0,0,0,.025);
+  background-size: 48px 100%;
+}
+
+.sleep-line {
+  position: absolute;
+  left: 12%;
+  height: 6px;
+  background: #8eaab3;
+}
+
+.line-a { top: 32%; width: 68%; }
+.line-b { top: 50%; width: 53%; background: #324f5d; }
+.line-c { top: 68%; width: 73%; background: #d7e1e3; }
+
+.wake-marker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 13px solid #111;
+  z-index: 2;
+}
+
+.marker-a { top: calc(32% - 5px); left: 42%; }
+.marker-b { top: calc(68% - 5px); left: 68%; }
+
+.record-description {
+  padding: 32px;
+}
+
+.record-description h2 {
+  margin: 12px 0 14px;
+  max-width: 620px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+.record-description p:not(.small-label) {
+  max-width: 650px;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.entry-link {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0,0,0,.25);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.entry-link span {
+  float: right;
+  font-size: 18px;
+}
+
+/* Footer */
+.site-footer {
+  padding: 0 42px 72px;
+}
+
+.footer-meta {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-top: 18px;
+  border-top: 1px solid #111;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+/* Responsive */
 @media (max-width: 900px) {
-  body {
-    padding: 20px;
-  }
-
-  .canvas-grid {
+  .record-body,
+  .record-header {
     grid-template-columns: 1fr;
   }
 
-  .three-canvas,
-  .p5-canvas {
-    height: 420px;
+  .record-header p + p {
+    border-left: none;
+    border-top: 1px solid #111;
+  }
+
+  .record-image {
+    border-right: none;
+    border-bottom: 1px dashed #111;
+  }
+}
+
+@media (max-width: 640px) {
+  .poster-nav {
+    left: 24px;
+    right: 24px;
+    font-size: 13px;
+  }
+
+  .opening-screen {
+    padding: 28px;
+  }
+
+  .poster-content h1 {
+    font-size: clamp(2.3rem, 11vw, 4.2rem);
+  }
+
+  .red-script--one,
+  .red-script--two,
+  .red-script--three {
+    font-size: clamp(2.6rem, 13vw, 5.8rem);
+  }
+
+  .page-content,
+  .site-footer {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .archive-sheet {
+    padding: 20px;
+  }
+
+  .footer-meta {
+    flex-direction: column;
   }
 }

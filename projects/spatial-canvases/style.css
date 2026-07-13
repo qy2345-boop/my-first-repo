@@ -1,0 +1,106 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 32px;
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+  color: #111;
+}
+
+.page-header {
+  max-width: 1500px;
+  margin: 0 auto 40px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #111;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.page-header h1 {
+  margin: 0 0 12px;
+  font-size: 40px;
+}
+
+.page-header p {
+  max-width: 850px;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  max-width: 1500px;
+  margin: 0 auto 56px;
+  align-items: start;
+}
+
+.canvas-card {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 64px auto;
+  align-content: start;
+}
+
+.canvas-card h2 {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+
+.canvas-card p {
+  margin: 0;
+  min-height: 64px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.three-canvas {
+  width: 100%;
+  height: 430px;
+  border: 1px solid #111;
+  background: #f7f7f7;
+  position: relative;
+  overflow: hidden;
+}
+
+.three-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 20px;
+  }
+
+  .canvas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .canvas-card {
+    grid-template-rows: auto auto auto;
+  }
+
+  .canvas-card p {
+    min-height: 0;
+    margin-bottom: 18px;
+  }
+
+  .three-canvas {
+    height: 420px;
+  }
+}
