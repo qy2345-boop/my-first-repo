@@ -6,13 +6,49 @@
   <title>Computational Design Practices — Poppy Qiaochu Yang</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .project-landing {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      width: 100vw;
+      min-height: 100vh;
+      margin: 0;
+      border: 0;
+      background: #f3eee5;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .project-landing:target {
+      display: flex;
+    }
+
+    .project-frame {
+      width: 100%;
+      flex: 1;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .record-card {
+      scroll-margin-top: 24px;
+    }
+
+    .record-card:focus,
+    .record-card:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+  </style>
 </head>
 <body>
   <section class="opening-screen">
     <header class="poster-nav">
       <a href="#">GSAPP</a>
       <a href="#project-index">Project Archive</a>
-      <a href="https://qy2345-boop.github.io/models-all-the-way-precedent/#d3" target="_blank" rel="noopener noreferrer">D3 Relational ↗</a>
     </header>
 
     <div class="red-script red-script--one">Computational</div>
@@ -23,8 +59,8 @@
       <h1>
         A growing web archive by<br>
         <span>Poppy Qiaochu Yang</span><br>
-        exploring <em>spatial graphics</em>, <em>creative coding</em>,<br>
-        and <em>temporal + relational data visualization</em>.
+        exploring <em>spatial, temporal, relational, and geospatial structures</em>,<br>
+        <em>interactive engagement</em>, and <em>agent-based systems</em>.
       </h1>
     </div>
   </section>
@@ -34,15 +70,16 @@
       <div class="sheet-summary">
         <p class="small-label">Summary</p>
         <p>
-          This archive brings together a series of browser-based computational studies
-          developed through Three.js, p5.js, and D3.js. Each entry records a distinct
-          approach to motion, interaction, graphic behavior, and temporal data.
+          This archive brings together a series of browser-based computational studies exploring
+          spatial, temporal, relational, and geospatial structures, as well as interactive engagement
+          and agent-based systems. Each project uses code, data, and interaction to examine a different
+          way of organizing, representing, and navigating information in the browser.
         </p>
       </div>
 
       <p class="small-label item-title">Project Entries</p>
 
-      <a class="record-card" href="./projects/spatial-canvases/index.html">
+      <a class="record-card" id="spatial-card" href="#spatial-landing">
         <div class="record-header">
           <p>Number: 2026-SPATIAL-01</p>
           <p>Date: 2026/07/08</p>
@@ -56,7 +93,7 @@
           </div>
           <div class="record-description">
             <p class="small-label">Spatial Canvases</p>
-            <h2>Motion, geometry, and depth in browser-based space.</h2>
+            <h2>3D Spatial Canvas</h2>
             <p>
               A set of interactive Three.js studies exploring animated form, spatial
               composition, rotation, and real-time rendering in the browser.
@@ -66,7 +103,7 @@
         </div>
       </a>
 
-      <a class="record-card" href="./projects/generative-graphics/index.html">
+      <a class="record-card" id="generative-card" href="#generative-landing">
         <div class="record-header">
           <p>Number: 2026-GENERATIVE-02</p>
           <p>Date: 2026/07/08</p>
@@ -80,7 +117,7 @@
           </div>
           <div class="record-description">
             <p class="small-label">Generative Graphics</p>
-            <h2>Graphic systems built through repetition and movement.</h2>
+            <h2>2D Spatial Canvas</h2>
             <p>
               Two-dimensional visual experiments using p5.js to explore animation,
               rhythm, repetition, interaction, and changing graphic behavior.
@@ -90,11 +127,11 @@
         </div>
       </a>
 
-      <a class="record-card" href="./projects/when-do-i-wake-up/index.html">
+      <a class="record-card" id="temporal-card" href="#temporal-landing">
         <div class="record-header">
           <p>Number: 2026-TEMPORAL-03</p>
           <p>Date: 2026/07/12</p>
-          <p>Type: D3.js / Temporal Structure</p>
+          <p>Type: D3.js / Temporal Structure + Agent</p>
         </div>
         <div class="record-body">
           <div class="record-image preview-temporal">
@@ -107,11 +144,12 @@
           </div>
           <div class="record-description">
             <p class="small-label">When Do I Wake Up?</p>
-            <h2>A temporal study of sleep interruptions and recurring wake patterns.</h2>
+            <h2>Temporal Structure + Agent</h2>
             <p>
               Apple Health sleep data is organized across nightly timelines and monthly
               calendars to examine how often awakenings occur, when they cluster, and
-              which sleep stages usually precede them.
+              which sleep stages usually precede them. An embedded agent extends the
+              visualization by allowing patterns and anomalies in the sleep data to be queried directly.
             </p>
             <p class="entry-link">Open project <span>↗</span></p>
           </div>
@@ -119,9 +157,8 @@
       </a>
       <a
         class="record-card"
-        href="https://qy2345-boop.github.io/models-all-the-way-precedent/#d3"
-        target="_blank"
-        rel="noopener noreferrer"
+        id="relational-card"
+        href="#relational-landing"
       >
         <div class="record-header">
           <p>Number: 2026-RELATIONAL-04</p>
@@ -141,7 +178,7 @@
 
           <div class="record-description">
             <p class="small-label">Actors, Models, and Datasets</p>
-            <h2>A relational map of the organizations, models, and datasets behind LAION-5B.</h2>
+            <h2>Relational Structure</h2>
             <p>
               An interactive D3.js network examining how actors, machine-learning models,
               filtering operations, and datasets participate in the construction of LAION-5B.
@@ -150,17 +187,17 @@
             <p class="entry-link">Open project <span>↗</span></p>
           </div>
         </div>
+      </a>
 
       <a
         class="record-card"
-        href="https://qy2345-boop.github.io/dark-kitchen-hunt/"
-        target="_blank"
-        rel="noopener noreferrer"
+        id="geospatial-card"
+        href="#geospatial-landing"
       >
         <div class="record-header">
           <p>Number: 2026-GEOSPATIAL-05</p>
           <p>Date: 2026/07/22</p>
-          <p>Type: Mapbox / Geospatial Structure</p>
+          <p>Type: Mapbox / Geospatial Structure + Engagement</p>
         </div>
 
         <div class="record-body">
@@ -175,18 +212,82 @@
 
           <div class="record-description">
             <p class="small-label">Dark Kitchen Hunt</p>
-            <h2>An interactive investigation of potential dark-kitchen clusters in Beijing.</h2>
+            <h2>Geospatial Structure + Engagement Component</h2>
             <p>
               Food-delivery platform listings collected from five observation points are mapped
               through store locations, density, sales, category, and chain affiliation. The project
-              uses geographic exploration to compare visible storefronts with suspected hidden
-              food-production spaces.
+              combines geographic exploration with an engagement component that asks visitors to
+              inspect suspected dark-kitchen clusters and contribute their own judgments.
             </p>
             <p class="entry-link">Open project <span>↗</span></p>
           </div>
         </div>
       </a>
-      </a>
+    </section>
+
+    <section class="project-landing" id="spatial-landing">
+      <div class="landing-topbar">
+        <a href="#spatial-card" class="landing-back">← Back to Project Archive</a>
+        <span>2026-SPATIAL-01</span>
+      </div>
+      <iframe
+        class="project-frame"
+        src="./projects/spatial-canvases/index.html"
+        title="Spatial Canvases"
+        loading="eager"
+      ></iframe>
+    </section>
+
+    <section class="project-landing" id="generative-landing">
+      <div class="landing-topbar">
+        <a href="#generative-card" class="landing-back">← Back to Project Archive</a>
+        <span>2026-GENERATIVE-02</span>
+      </div>
+      <iframe
+        class="project-frame"
+        src="./projects/generative-graphics/index.html"
+        title="Generative Graphics"
+        loading="eager"
+      ></iframe>
+    </section>
+
+    <section class="project-landing" id="temporal-landing">
+      <div class="landing-topbar">
+        <a href="#temporal-card" class="landing-back">← Back to Project Archive</a>
+        <span>2026-TEMPORAL-03</span>
+      </div>
+      <iframe
+        class="project-frame"
+        src="./projects/when-do-i-wake-up/index.html"
+        title="When Do I Wake Up?"
+        loading="eager"
+      ></iframe>
+    </section>
+
+    <section class="project-landing" id="relational-landing">
+      <div class="landing-topbar">
+        <a href="#relational-card" class="landing-back">← Back to Project Archive</a>
+        <span>2026-RELATIONAL-04</span>
+      </div>
+      <iframe
+        class="project-frame"
+        src="https://qy2345-boop.github.io/models-all-the-way-precedent/#d3"
+        title="Actors, Models, and Datasets"
+        loading="eager"
+      ></iframe>
+    </section>
+
+    <section class="project-landing" id="geospatial-landing">
+      <div class="landing-topbar">
+        <a href="#geospatial-card" class="landing-back">← Back to Project Archive</a>
+        <span>2026-GEOSPATIAL-05</span>
+      </div>
+      <iframe
+        class="project-frame"
+        src="https://qy2345-boop.github.io/dark-kitchen-hunt-archive/"
+        title="Dark Kitchen Hunt"
+        loading="eager"
+      ></iframe>
     </section>
   </main>
 
@@ -199,4 +300,3 @@
   </footer>
 </body>
 </html>
-
