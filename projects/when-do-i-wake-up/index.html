@@ -102,69 +102,121 @@
       </div>
 
       <div class="profile-analysis">
-        <div class="profile-analysis-header">
-          <div>
-            <p class="agent-kicker">SLEEP CONTEXT AGENT</p>
-            <h3>Investigate this night</h3>
-            <p class="agent-copy">
-              Compare the selected night with nearby sleep patterns, daily activity,
-              and environmental conditions.
-            </p>
+        <div class="profile-workspace">
+          <div class="profile-evidence">
+            <div class="profile-analysis-header">
+              <div>
+                <p class="agent-kicker">VISUAL EVIDENCE</p>
+                <h3>Selected night in context</h3>
+                <p class="agent-copy">
+                  Compare the selected night with nearby sleep patterns, activity,
+                  awakenings, stages, and environmental conditions.
+                </p>
+              </div>
+              <div class="selection-hint" aria-label="Click a recorded day above to inspect a night">
+                <div class="selection-hint-calendar" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span class="selection-hint-day"></span><span></span><span></span><span></span><span></span>
+                  <i class="selection-hint-cursor"></i>
+                </div>
+                <p><strong>CLICK A DAY ABOVE</strong><br>to inspect the night</p>
+              </div>
+            </div>
+
+            <div class="profile-cards" aria-label="Selected night context">
+              <article class="profile-card profile-card-score">
+                <p class="profile-card-label">NIGHT STABILITY</p>
+                <strong id="night-score">—</strong>
+                <div id="stability-chart" class="mini-chart"></div>
+                <span id="night-score-note">Select a night to calculate a profile.</span>
+              </article>
+
+              <article class="profile-card">
+                <p class="profile-card-label">SLEEP DURATION</p>
+                <strong id="profile-duration">—</strong>
+                <div id="duration-chart" class="mini-chart"></div>
+                <span id="profile-duration-note">Compared with nearby nights</span>
+              </article>
+
+              <article class="profile-card">
+                <p class="profile-card-label">SLEEP TIMING</p>
+                <strong id="profile-timing">—</strong>
+                <div id="timing-chart" class="mini-chart"></div>
+                <span id="profile-timing-note">Bedtime and wake time</span>
+              </article>
+
+              <article class="profile-card">
+                <p class="profile-card-label">FRAGMENTATION</p>
+                <strong id="profile-fragmentation">—</strong>
+                <div id="fragmentation-chart" class="mini-chart"></div>
+                <span id="profile-fragmentation-note">Recorded awakenings</span>
+              </article>
+
+              <article class="profile-card">
+                <p class="profile-card-label">SLEEP STAGES</p>
+                <strong id="profile-stages">—</strong>
+                <div id="stages-chart" class="mini-chart"></div>
+                <span id="profile-stages-note">Deep and REM sleep</span>
+              </article>
+
+              <article class="profile-card">
+                <p class="profile-card-label">ACTIVITY</p>
+                <strong id="profile-activity">—</strong>
+                <div id="activity-chart" class="mini-chart"></div>
+                <span id="profile-activity-note">Daily steps</span>
+              </article>
+
+              <article class="profile-card profile-card-weather">
+                <p class="profile-card-label">WEATHER</p>
+                <strong id="profile-weather">—</strong>
+                <div id="weather-chart" class="mini-chart"></div>
+                <span id="profile-weather-note">Tianjin historical weather</span>
+              </article>
+            </div>
           </div>
 
-          <button id="investigate-night" type="button" disabled>
-            Investigate this night
-          </button>
+          <aside class="agent-chat-panel" aria-label="Sleep agent chat">
+            <div class="agent-chat-header">
+              <p class="agent-kicker">ASK THE SLEEP AGENT</p>
+              <h3>Ask about this night or your Q4 sleep patterns.</h3>
+              <p class="agent-copy">
+                The agent can compare nights, identify unusual periods, and explain patterns
+                using the sleep, activity, and weather data in this project.
+              </p>
+            </div>
+
+            <div id="agent-results" class="agent-chat-history" aria-live="polite">
+              <div class="agent-message agent-message-system">
+                <span class="agent-dot" aria-hidden="true"></span>
+                <p>Select a night or ask a question about your Q4 sleep data.</p>
+              </div>
+            </div>
+
+            <div class="agent-suggestions" aria-label="Suggested questions">
+              <button class="agent-prompt" type="button" data-question="Why was this night unusual?">
+                Why unusual?
+              </button>
+              <button class="agent-prompt" type="button" data-question="Which period had the least sleep?">
+                Least sleep period?
+              </button>
+              <button class="agent-prompt" type="button" data-question="What changed from the previous night?">
+                Compare yesterday
+              </button>
+            </div>
+
+            <form id="agent-chat-form" class="agent-chat-form">
+              <label class="sr-only" for="agent-question">Ask the sleep agent</label>
+              <textarea
+                id="agent-question"
+                rows="3"
+                placeholder="Ask about a night or a pattern..."
+              ></textarea>
+              <button id="investigate-night" type="submit">
+                Ask agent
+              </button>
+            </form>
+          </aside>
         </div>
-
-        <div class="profile-cards" aria-label="Selected night context">
-          <article class="profile-card profile-card-score">
-            <p class="profile-card-label">NIGHT STABILITY</p>
-            <strong id="night-score">—</strong>
-            <span id="night-score-note">Select a night to calculate a profile.</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">SLEEP DURATION</p>
-            <strong id="profile-duration">—</strong>
-            <span id="profile-duration-note">Compared with nearby nights</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">SLEEP TIMING</p>
-            <strong id="profile-timing">—</strong>
-            <span id="profile-timing-note">Bedtime and wake time</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">FRAGMENTATION</p>
-            <strong id="profile-fragmentation">—</strong>
-            <span id="profile-fragmentation-note">Recorded awakenings</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">SLEEP STAGES</p>
-            <strong id="profile-stages">—</strong>
-            <span id="profile-stages-note">Deep and REM sleep</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">ACTIVITY</p>
-            <strong id="profile-activity">—</strong>
-            <span id="profile-activity-note">Daily steps</span>
-          </article>
-
-          <article class="profile-card">
-            <p class="profile-card-label">WEATHER</p>
-            <strong id="profile-weather">—</strong>
-            <span id="profile-weather-note">Tianjin historical weather</span>
-          </article>
-        </div>
-
-        <div id="agent-results" class="agent-results" aria-live="polite">
-          <p>Select a night to begin an investigation.</p>
-        </div>
-      </div>
     </section>
 
     <footer>

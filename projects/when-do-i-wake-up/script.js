@@ -7,6 +7,9 @@ const tooltip = d3.select("#tooltip");
 const details = d3.select("#details");
 const investigateButton = d3.select("#investigate-night");
 const agentResults = d3.select("#agent-results");
+const agentChatForm = d3.select("#agent-chat-form");
+const agentQuestion = d3.select("#agent-question");
+const agentPrompts = d3.selectAll(".agent-prompt");
 const nightScore = d3.select("#night-score");
 const nightScoreNote = d3.select("#night-score-note");
 const profileDuration = d3.select("#profile-duration");
@@ -23,6 +26,8 @@ const profileWeather = d3.select("#profile-weather");
 const profileWeatherNote = d3.select("#profile-weather-note");
 let selectedNight = null;
 let allSleepSummary = [];
+let allSleepStages = [];
+let allAwakenings = [];
 const SLEEP_FUNCTION_URL = "https://us-central1-dark-kitchen-53278.cloudfunctions.net/investigateSleepNight";
 
 Promise.all([
@@ -65,6 +70,8 @@ Promise.all([
   }))
 ]).then(([stages, summary, awakenings, monthly, steps]) => {
   allSleepSummary = summary;
+  allSleepStages = stages;
+  allAwakenings = awakenings;
   const stepsByDate = new Map(steps.map(d => [d.date, d.steps]));
   summary.forEach(d => {
     d.steps = stepsByDate.get(d.display_date) ?? null;
@@ -181,6 +188,344 @@ function relativeLabel(value, baseline, unit = "") {
   return `${Math.abs(diff).toFixed(1)}${unit} ${direction} nearby-night median`;
 }
 
+// Mini-chart helper/drawing functions moved here for global access
+function miniChartContext(d, radius = 2) {
+  const index = allSleepSummary.findIndex(n => n.display_date === d.display_date);
+  if (index === -1) return [];
+  const start = Math.max(0, index - radius);
+  const end = Math.min(allSleepSummary.length, index + radius + 1);
+  return allSleepSummary.slice(start, end);
+}
+
+function clearMiniChart(selector) {
+  d3.select(selector).selectAll("*").remove();
+}
+
+function showMiniTooltip(event, html) {
+  tooltip
+    .style("opacity", 1)
+    .style("left", `${event.clientX}px`)
+    .style("top", `${event.clientY}px`)
+    .html(html);
+}
+
+function hideMiniTooltip() {
+  tooltip.style("opacity", 0);
+}
+
+function drawStabilityChart(d) {
+  const selector = "#stability-chart";
+  clearMiniChart(selector);
+  const score = calculateNightStability(d);
+  if (score == null) return;
+
+  const width = 260;
+  const height = 72;
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const x = d3.scaleLinear().domain([0, 100]).range([0, width]);
+
+  svg.append("line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", 38)
+    .attr("y2", 38)
+    .attr("stroke", "#cfc8bb")
+    .attr("stroke-width", 8)
+    .attr("stroke-linecap", "round");
+
+  svg.append("line")
+    .attr("x1", 0)
+    .attr("x2", x(score))
+    .attr("y1", 38)
+    .attr("y2", 38)
+    .attr("stroke", "#324f5d")
+    .attr("stroke-width", 8)
+    .attr("stroke-linecap", "round");
+
+  [60, 80].forEach(value => {
+    svg.append("line")
+      .attr("x1", x(value))
+      .attr("x2", x(value))
+      .attr("y1", 29)
+      .attr("y2", 47)
+      .attr("stroke", "#817d77")
+      .attr("stroke-width", 1);
+  });
+}
+
+function drawDurationChart(d) {
+  const selector = "#duration-chart";
+  clearMiniChart(selector);
+  const data = miniChartContext(d, 2);
+  if (!data.length) return;
+
+  const width = 280;
+  const height = 92;
+  const margin = {top: 8, right: 6, bottom: 18, left: 6};
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const x = d3.scaleBand()
+    .domain(data.map(n => n.display_date))
+    .range([margin.left, width - margin.right])
+    .padding(.3);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(data, n => n.total_sleep_hours) || 1])
+    .nice()
+    .range([height - margin.bottom, margin.top]);
+
+  svg.selectAll("rect")
+    .data(data)
+    .join("rect")
+    .attr("x", n => x(n.display_date))
+    .attr("y", n => y(n.total_sleep_hours))
+    .attr("width", x.bandwidth())
+    .attr("height", n => height - margin.bottom - y(n.total_sleep_hours))
+    .attr("rx", 3)
+    .attr("fill", n => n.display_date === d.display_date ? "#324f5d" : "#c7d2d4")
+    .on("mousemove", (event, n) => {
+      showMiniTooltip(event, `
+        <strong>${fmtFullDate(n.display_date_obj)}</strong><br>
+        ${n.total_sleep_hours.toFixed(1)} h sleep
+      `);
+    })
+    .on("mouseleave", hideMiniTooltip);
+
+  svg.selectAll("text")
+    .data(data)
+    .join("text")
+    .attr("x", n => x(n.display_date) + x.bandwidth()/2)
+    .attr("y", height - 4)
+    .attr("text-anchor", "middle")
+    .attr("font-size", 8)
+    .attr("fill", "#817d77")
+    .text(n => d3.timeFormat("%m/%d")(n.display_date_obj));
+}
+
+function drawTimingChart(d) {
+  const selector = "#timing-chart";
+  clearMiniChart(selector);
+  const data = miniChartContext(d, 2);
+  if (!data.length) return;
+
+  const width = 280;
+  const height = 100;
+  const margin = {top: 10, right: 8, bottom: 18, left: 8};
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const normalize = value => value < 12 ? value + 24 : value;
+  const x = d3.scaleLinear().domain([18, 36]).range([margin.left, width - margin.right]);
+  const y = d3.scaleBand().domain(data.map(n => n.display_date)).range([margin.top, height - margin.bottom]).padding(.45);
+
+  svg.selectAll("line.sleep-range")
+    .data(data)
+    .join("line")
+    .attr("class", "sleep-range")
+    .attr("x1", n => x(normalize(n.sleep_start_clock)))
+    .attr("x2", n => x(normalize(n.sleep_end_clock)))
+    .attr("y1", n => y(n.display_date) + y.bandwidth()/2)
+    .attr("y2", n => y(n.display_date) + y.bandwidth()/2)
+    .attr("stroke", n => n.display_date === d.display_date ? "#324f5d" : "#c7d2d4")
+    .attr("stroke-width", n => n.display_date === d.display_date ? 7 : 5)
+    .attr("stroke-linecap", "round")
+    .on("mousemove", (event, n) => {
+      showMiniTooltip(event, `
+        <strong>${fmtFullDate(n.display_date_obj)}</strong><br>
+        ${formatClock(n.sleep_start_clock)}–${formatClock(n.sleep_end_clock)}
+      `);
+    })
+    .on("mouseleave", hideMiniTooltip);
+
+  svg.selectAll("text.date")
+    .data(data)
+    .join("text")
+    .attr("class", "date")
+    .attr("x", margin.left)
+    .attr("y", n => y(n.display_date) + y.bandwidth()/2 - 5)
+    .attr("font-size", 7)
+    .attr("fill", "#817d77")
+    .text(n => d3.timeFormat("%m/%d")(n.display_date_obj));
+}
+
+function drawFragmentationChart(d) {
+  const selector = "#fragmentation-chart";
+  clearMiniChart(selector);
+  const events = allAwakenings.filter(a =>
+    a.display_date === d.display_date ||
+    a.date === d.display_date ||
+    a.session_id === d.session_id
+  );
+
+  const width = 280;
+  const height = 84;
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const start = d.sleep_start_clock;
+  const end = d.sleep_end_clock;
+  const normalizeNightClock = value => value < start ? value + 24 : value;
+  const normalizedEnd = normalizeNightClock(end);
+  const x = d3.scaleLinear()
+    .domain([start, normalizedEnd])
+    .range([12, width - 12]);
+
+  svg.append("line")
+    .attr("x1", 12)
+    .attr("x2", width - 12)
+    .attr("y1", 42)
+    .attr("y2", 42)
+    .attr("stroke", "#c7d2d4")
+    .attr("stroke-width", 3)
+    .attr("stroke-linecap", "round");
+
+  svg.selectAll("circle")
+    .data(events)
+    .join("circle")
+    .attr("cx", a => x(normalizeNightClock(a.start_clock)))
+    .attr("cy", 42)
+    .attr("r", 5)
+    .attr("fill", "#324f5d")
+    .on("mousemove", (event, a) => {
+      showMiniTooltip(event, `
+        <strong>AWAKENING</strong><br>
+        ${formatClock(a.start_clock)}–${formatClock(a.end_clock)}<br>
+        ${Math.round(a.duration_minutes)} min
+      `);
+    })
+    .on("mouseleave", hideMiniTooltip);
+
+  svg.append("text")
+    .attr("x", 12)
+    .attr("y", 67)
+    .attr("font-size", 7)
+    .attr("fill", "#817d77")
+    .text(formatClock(start));
+
+  svg.append("text")
+    .attr("x", width - 12)
+    .attr("y", 67)
+    .attr("text-anchor", "end")
+    .attr("font-size", 7)
+    .attr("fill", "#817d77")
+    .text(formatClock(end));
+}
+
+function drawStagesChart(d) {
+  const selector = "#stages-chart";
+  clearMiniChart(selector);
+
+  const core = Math.max(0, d.total_sleep_hours * 60 - d.deep_minutes - d.rem_minutes);
+  const data = [
+    {label: "Core", value: core, fill: "#b8c8cc"},
+    {label: "REM", value: d.rem_minutes, fill: "#7f9da6"},
+    {label: "Deep", value: d.deep_minutes, fill: "#324f5d"}
+  ];
+  const total = d3.sum(data, n => n.value) || 1;
+
+  const width = 280;
+  const height = 88;
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  let cursor = 0;
+  data.forEach(segment => {
+    const segmentWidth = width * segment.value / total;
+    svg.append("rect")
+      .attr("x", cursor)
+      .attr("y", 22)
+      .attr("width", segmentWidth)
+      .attr("height", 22)
+      .attr("fill", segment.fill)
+      .on("mousemove", event => {
+        showMiniTooltip(event, `
+          <strong>${segment.label.toUpperCase()}</strong><br>
+          ${Math.round(segment.value)} min
+        `);
+      })
+      .on("mouseleave", hideMiniTooltip);
+    cursor += segmentWidth;
+  });
+
+  const legend = svg.selectAll("g.legend-item")
+    .data(data)
+    .join("g")
+    .attr("class", "legend-item")
+    .attr("transform", (n, i) => `translate(${i * 92},63)`);
+
+  legend.append("circle")
+    .attr("r", 3)
+    .attr("fill", n => n.fill);
+
+  legend.append("text")
+    .attr("x", 7)
+    .attr("y", 3)
+    .attr("font-size", 7)
+    .attr("fill", "#817d77")
+    .text(n => `${n.label} ${Math.round(n.value)}m`);
+}
+
+function drawActivityChart(d) {
+  const selector = "#activity-chart";
+  clearMiniChart(selector);
+  const data = miniChartContext(d, 2).filter(n => Number.isFinite(n.steps));
+  if (!data.length) return;
+
+  const width = 280;
+  const height = 92;
+  const margin = {top: 8, right: 6, bottom: 18, left: 6};
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const x = d3.scaleBand().domain(data.map(n => n.display_date)).range([margin.left, width - margin.right]).padding(.3);
+  const y = d3.scaleLinear().domain([0, d3.max(data, n => n.steps) || 1]).nice().range([height - margin.bottom, margin.top]);
+
+  svg.selectAll("rect")
+    .data(data)
+    .join("rect")
+    .attr("x", n => x(n.display_date))
+    .attr("y", n => y(n.steps))
+    .attr("width", x.bandwidth())
+    .attr("height", n => height - margin.bottom - y(n.steps))
+    .attr("rx", 3)
+    .attr("fill", n => n.display_date === d.display_date ? "#324f5d" : "#c7d2d4")
+    .on("mousemove", (event, n) => {
+      showMiniTooltip(event, `
+        <strong>${fmtFullDate(n.display_date_obj)}</strong><br>
+        ${d3.format(",")(n.steps)} steps
+      `);
+    })
+    .on("mouseleave", hideMiniTooltip);
+
+  svg.selectAll("text")
+    .data(data)
+    .join("text")
+    .attr("x", n => x(n.display_date) + x.bandwidth()/2)
+    .attr("y", height - 4)
+    .attr("text-anchor", "middle")
+    .attr("font-size", 8)
+    .attr("fill", "#817d77")
+    .text(n => d3.timeFormat("%m/%d")(n.display_date_obj));
+}
+
+function drawProfileMiniCharts(d) {
+  drawStabilityChart(d);
+  drawDurationChart(d);
+  drawTimingChart(d);
+  drawFragmentationChart(d);
+  drawStagesChart(d);
+  drawActivityChart(d);
+}
+
 function updateProfileCards(d) {
   const nearby = nearbyNights(d.display_date, 3);
   const durationMedian = median(nearby.map(n => n.total_sleep_hours));
@@ -188,6 +533,7 @@ function updateProfileCards(d) {
   const awakeningMedian = median(nearby.map(n => n.awakening_count));
   const stepsMedian = median(allSleepSummary.map(n => n.steps).filter(Number.isFinite));
   const score = calculateNightStability(d);
+  drawProfileMiniCharts(d);
 
   nightScore.text(score == null ? "—" : score);
   nightScoreNote.text(
@@ -232,11 +578,127 @@ function updateProfileCards(d) {
       : relativeLabel(d.steps, stepsMedian, " steps")
   );
 
-  profileWeather.text("—");
-  profileWeatherNote.text("Run investigation to load Tianjin weather");
+  profileWeather.text(d.weather?.temperature_mean == null ? "—" : `${d.weather.temperature_mean.toFixed(1)}°C`);
+  profileWeatherNote.text(
+    d.weather
+      ? [
+          d.weather.humidity_mean == null ? null : `${Math.round(d.weather.humidity_mean)}% humidity`,
+          d.weather.precipitation_sum == null ? null : `${d.weather.precipitation_sum.toFixed(1)} mm precipitation`
+        ].filter(Boolean).join(" · ") || "Historical weather loaded"
+      : "Loading Tianjin historical weather"
+  );
+}
+
+function drawWeatherChart(weather) {
+  const selector = "#weather-chart";
+  clearMiniChart(selector);
+
+  const data = (weather.hourly_temperature || [])
+    .filter(d => Number.isFinite(d.temperature));
+
+  if (!data.length) return;
+
+  const width = 900;
+  const height = 130;
+  const margin = {top: 16, right: 16, bottom: 26, left: 16};
+
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "none");
+
+  const x = d3.scaleLinear()
+    .domain([0, 23])
+    .range([margin.left, width - margin.right]);
+
+  const extent = d3.extent(data, d => d.temperature);
+  const padding = Math.max(1, (extent[1] - extent[0]) * 0.25);
+  const y = d3.scaleLinear()
+    .domain([extent[0] - padding, extent[1] + padding])
+    .range([height - margin.bottom, margin.top]);
+
+  const area = d3.area()
+    .x(d => x(d.hour))
+    .y0(height - margin.bottom)
+    .y1(d => y(d.temperature))
+    .curve(d3.curveMonotoneX);
+
+  const line = d3.line()
+    .x(d => x(d.hour))
+    .y(d => y(d.temperature))
+    .curve(d3.curveMonotoneX);
+
+  svg.append("path")
+    .datum(data)
+    .attr("d", area)
+    .attr("fill", "rgba(142,170,179,.14)");
+
+  svg.append("line")
+    .attr("x1", margin.left)
+    .attr("x2", width - margin.right)
+    .attr("y1", y(weather.temperature_mean))
+    .attr("y2", y(weather.temperature_mean))
+    .attr("stroke", "#cfc8bb")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "4 5");
+
+  svg.append("path")
+    .datum(data)
+    .attr("d", line)
+    .attr("fill", "none")
+    .attr("stroke", "#324f5d")
+    .attr("stroke-width", 2.5)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round");
+
+  svg.selectAll("circle.weather-point")
+    .data(data)
+    .join("circle")
+    .attr("class", "weather-point")
+    .attr("cx", d => x(d.hour))
+    .attr("cy", d => y(d.temperature))
+    .attr("r", 7)
+    .attr("fill", "transparent")
+    .on("mousemove", (event, d) => {
+      showMiniTooltip(event, `
+        <strong>${String(d.hour).padStart(2, "0")}:00</strong><br>
+        ${d.temperature.toFixed(1)}°C
+      `);
+    })
+    .on("mouseleave", hideMiniTooltip);
+
+  [0, 6, 12, 18, 23].forEach(hour => {
+    svg.append("text")
+      .attr("x", x(hour))
+      .attr("y", height - 6)
+      .attr("text-anchor", hour === 0 ? "start" : hour === 23 ? "end" : "middle")
+      .attr("font-size", 8)
+      .attr("fill", "#817d77")
+      .text(hour === 23 ? "24" : String(hour).padStart(2, "0"));
+  });
+
+  const minPoint = data.reduce((a, b) => a.temperature < b.temperature ? a : b);
+  const maxPoint = data.reduce((a, b) => a.temperature > b.temperature ? a : b);
+
+  [minPoint, maxPoint].forEach(point => {
+    svg.append("circle")
+      .attr("cx", x(point.hour))
+      .attr("cy", y(point.temperature))
+      .attr("r", 3.5)
+      .attr("fill", "#324f5d");
+
+    svg.append("text")
+      .attr("x", x(point.hour))
+      .attr("y", y(point.temperature) - 8)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 8)
+      .attr("fill", "#324f5d")
+      .text(`${point.temperature.toFixed(1)}°`);
+  });
 }
 
 function updateWeatherCard(weather) {
+  drawWeatherChart(weather);
   profileWeather.text(
     weather.temperature_mean == null ? "—" : `${weather.temperature_mean.toFixed(1)}°C`
   );
@@ -246,6 +708,98 @@ function updateWeatherCard(weather) {
       weather.precipitation_sum == null ? null : `${weather.precipitation_sum.toFixed(1)} mm precipitation`
     ].filter(Boolean).join(" · ") || "Historical weather loaded"
   );
+}
+
+async function loadWeatherForNight(d) {
+  profileWeather.text("…");
+  profileWeatherNote.text("Loading Tianjin historical weather");
+  clearMiniChart("#weather-chart");
+
+  try {
+    const weather = await getHistoricalWeather(d.display_date);
+    if (selectedNight?.display_date !== d.display_date) return;
+    d.weather = weather;
+    updateWeatherCard(weather);
+  } catch (error) {
+    console.error(error);
+    if (selectedNight?.display_date !== d.display_date) return;
+    profileWeather.text("—");
+    profileWeatherNote.text("Weather unavailable for this date");
+  }
+}
+function buildQuarterDataset() {
+  return allSleepSummary.map(d => ({
+    date: d.display_date,
+    total_sleep_hours: d.total_sleep_hours,
+    sleep_start: formatClock(d.sleep_start_clock),
+    wake_time: formatClock(d.sleep_end_clock),
+    awakening_count: d.awakening_count,
+    longest_awakening_minutes: d.longest_awakening_minutes,
+    deep_minutes: d.deep_minutes,
+    rem_minutes: d.rem_minutes,
+    awake_minutes: d.awake_minutes,
+    steps: d.steps
+  }));
+}
+
+function appendAgentMessage(role, text) {
+  const message = agentResults
+    .append("div")
+    .attr("class", `agent-message agent-message-${role}`);
+
+  message.append("p").text(text);
+  const node = agentResults.node();
+  if (node) node.scrollTop = node.scrollHeight;
+}
+
+async function askSleepAgent(question) {
+  const cleanQuestion = question.trim();
+  if (!cleanQuestion) return;
+
+  appendAgentMessage("user", cleanQuestion);
+  agentQuestion.property("value", "");
+  investigateButton.property("disabled", true).text("Thinking…");
+
+  const loadingMessage = agentResults
+    .append("div")
+    .attr("class", "agent-message agent-message-agent")
+    .append("p")
+    .text("Looking across your Q4 sleep data…");
+
+  try {
+    const response = await fetch(SLEEP_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        question: cleanQuestion,
+        selectedDate: selectedNight?.display_date ?? null,
+        selectedNight: selectedNight ? buildSleepPayload(selectedNight) : null,
+        selectedWeather: selectedNight?.weather ?? null,
+        dataset: buildQuarterDataset()
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Firebase request failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const answer = result.answer || result.analysis;
+    if (!answer) {
+      throw new Error(result.details || result.error || "No agent answer returned");
+    }
+
+    loadingMessage.text(answer);
+  } catch (error) {
+    console.error(error);
+    loadingMessage.text(`I couldn't reach the sleep agent: ${error.message}`);
+  } finally {
+    investigateButton.property("disabled", false).text("Ask agent");
+    const node = agentResults.node();
+    if (node) node.scrollTop = node.scrollHeight;
+  }
 }
 
 // Get historical weather for a given date (YYYY-MM-DD) in Tianjin
@@ -266,6 +820,7 @@ async function getHistoricalWeather(date) {
     "relative_humidity_2m_mean",
     "precipitation_sum"
   ].join(","));
+  url.searchParams.set("hourly", "temperature_2m");
   url.searchParams.set("timezone", "Asia/Shanghai");
 
   const response = await fetch(url);
@@ -275,6 +830,13 @@ async function getHistoricalWeather(date) {
 
   const json = await response.json();
   const daily = json.daily;
+  const hourlyTimes = json.hourly?.time || [];
+  const hourlyTemperatures = json.hourly?.temperature_2m || [];
+  const hourlyTemperature = hourlyTimes.map((time, index) => ({
+    time,
+    hour: new Date(time).getHours(),
+    temperature: hourlyTemperatures[index]
+  }));
 
   return {
     weather_code: daily.weather_code?.[0] ?? null,
@@ -282,7 +844,8 @@ async function getHistoricalWeather(date) {
     temperature_max: daily.temperature_2m_max?.[0] ?? null,
     temperature_min: daily.temperature_2m_min?.[0] ?? null,
     humidity_mean: daily.relative_humidity_2m_mean?.[0] ?? null,
-    precipitation_sum: daily.precipitation_sum?.[0] ?? null
+    precipitation_sum: daily.precipitation_sum?.[0] ?? null,
+    hourly_temperature: hourlyTemperature
   };
 }
 
@@ -477,11 +1040,12 @@ function drawAllCalendars(summary, months) {
 
         selectedNight = d.item;
         updateProfileCards(selectedNight);
-        investigateButton.property("disabled", false);
-        agentResults.html(`
-          <p><strong>${fmtFullDate(selectedNight.display_date_obj)}</strong> selected.</p>
-          <p>Ready to investigate this night.</p>
-        `);
+        loadWeatherForNight(selectedNight);
+        agentResults.html("");
+        appendAgentMessage(
+          "system",
+          `${fmtFullDate(selectedNight.display_date_obj)} selected. Ask about this night or your Q4 sleep patterns.`
+        );
 
         container.selectAll(".day-cell")
           .classed("is-selected", false);
@@ -544,70 +1108,13 @@ function getRecentSleepContext(selectedDate, daysEachSide = 3) {
     .map(buildSleepPayload);
 }
 
-investigateButton.on("click", async () => {
-  if (!selectedNight) return;
+agentChatForm.on("submit", event => {
+  event.preventDefault();
+  askSleepAgent(agentQuestion.property("value"));
+});
 
-  investigateButton.property("disabled", true).text("Checking context…");
-  agentResults.html(`
-    <p class="agent-kicker">INVESTIGATING</p>
-    <p><strong>${fmtFullDate(selectedNight.display_date_obj)}</strong></p>
-    <p>Loading historical weather for Tianjin...</p>
-  `);
-
-  try {
-    const weather = await getHistoricalWeather(selectedNight.display_date);
-    selectedNight.weather = weather;
-    updateWeatherCard(weather);
-
-    agentResults.html(`
-      <p class="agent-kicker">CONTACTING FIREBASE</p>
-      <p><strong>${fmtFullDate(selectedNight.display_date_obj)}</strong></p>
-      <p>Sending the selected night to the sleep investigation backend...</p>
-    `);
-
-    const response = await fetch(SLEEP_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        date: selectedNight.display_date,
-        sleep: buildSleepPayload(selectedNight),
-        activity: {
-          steps: selectedNight.steps
-        },
-        weather,
-        recentSleep: getRecentSleepContext(selectedNight.display_date)
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Firebase request failed: ${response.status}`);
-    }
-
-    const firebaseResult = await response.json();
-
-    if (!firebaseResult.analysis) {
-      throw new Error(firebaseResult.details || firebaseResult.error || "No agent analysis returned");
-    }
-
-    agentResults.html(`
-      <p class="agent-kicker">AGENT ANALYSIS</p>
-      <p><strong>${fmtFullDate(selectedNight.display_date_obj)}</strong></p>
-      <p>
-        ${selectedNight.total_sleep_hours.toFixed(1)} hours of sleep ·
-        ${selectedNight.awakening_count} awakening${selectedNight.awakening_count === 1 ? "" : "s"} ·
-        ${selectedNight.steps == null ? "No step data" : `${d3.format(",")(selectedNight.steps)} steps`}
-      </p>
-      <div class="agent-analysis">${firebaseResult.analysis.replace(/\n/g, "<br>")}</div>
-    `);
-  } catch (error) {
-    console.error(error);
-    agentResults.html(`
-      <p class="agent-kicker">CONNECTION ERROR</p>
-      <p>${error.message}</p>
-    `);
-  } finally {
-    investigateButton.property("disabled", false).text("Investigate this night");
-  }
+agentPrompts.on("click", function() {
+  const question = d3.select(this).attr("data-question");
+  agentQuestion.property("value", question);
+  askSleepAgent(question);
 });
