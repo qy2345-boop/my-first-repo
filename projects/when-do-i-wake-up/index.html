@@ -79,10 +79,17 @@
       </div>
     </section>
 
-    <section class="calendar-section">
-      <div>
-        <p class="section-number">02</p>
-        <h2>Month overview</h2>
+    <section class="profile-section">
+      <div class="profile-heading">
+        <div>
+          <p class="section-number">02</p>
+          <h2>Night profile</h2>
+        </div>
+
+        <p class="section-copy">
+          Select a recorded night to inspect its sleep structure, activity, weather context,
+          and agent-based interpretation in one combined profile.
+        </p>
       </div>
 
       <div class="calendar-layout">
@@ -90,8 +97,73 @@
 
         <aside id="details" class="details-panel">
           <p class="details-kicker">SELECTED NIGHT</p>
-          <p class="details-empty">Hover over a recorded day to inspect it.</p>
+          <p class="details-empty">Click a recorded day to select and inspect it.</p>
         </aside>
+      </div>
+
+      <div class="profile-analysis">
+        <div class="profile-analysis-header">
+          <div>
+            <p class="agent-kicker">SLEEP CONTEXT AGENT</p>
+            <h3>Investigate this night</h3>
+            <p class="agent-copy">
+              Compare the selected night with nearby sleep patterns, daily activity,
+              and environmental conditions.
+            </p>
+          </div>
+
+          <button id="investigate-night" type="button" disabled>
+            Investigate this night
+          </button>
+        </div>
+
+        <div class="profile-cards" aria-label="Selected night context">
+          <article class="profile-card profile-card-score">
+            <p class="profile-card-label">NIGHT STABILITY</p>
+            <strong id="night-score">—</strong>
+            <span id="night-score-note">Select a night to calculate a profile.</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">SLEEP DURATION</p>
+            <strong id="profile-duration">—</strong>
+            <span id="profile-duration-note">Compared with nearby nights</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">SLEEP TIMING</p>
+            <strong id="profile-timing">—</strong>
+            <span id="profile-timing-note">Bedtime and wake time</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">FRAGMENTATION</p>
+            <strong id="profile-fragmentation">—</strong>
+            <span id="profile-fragmentation-note">Recorded awakenings</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">SLEEP STAGES</p>
+            <strong id="profile-stages">—</strong>
+            <span id="profile-stages-note">Deep and REM sleep</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">ACTIVITY</p>
+            <strong id="profile-activity">—</strong>
+            <span id="profile-activity-note">Daily steps</span>
+          </article>
+
+          <article class="profile-card">
+            <p class="profile-card-label">WEATHER</p>
+            <strong id="profile-weather">—</strong>
+            <span id="profile-weather-note">Tianjin historical weather</span>
+          </article>
+        </div>
+
+        <div id="agent-results" class="agent-results" aria-live="polite">
+          <p>Select a night to begin an investigation.</p>
+        </div>
       </div>
     </section>
 
